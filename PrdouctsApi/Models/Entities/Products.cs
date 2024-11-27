@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrdouctsApi.Models.Entities
 {
+    //Product Table coulums
     public class Products: IProducts
     {
         [Required]
