@@ -2,7 +2,6 @@
 
 namespace PrdouctsApi.Models.DTOs
 {
-    //Used to get Data From Payload
     public class ProductDto
     {
         public string? ProductName { get; set; }
