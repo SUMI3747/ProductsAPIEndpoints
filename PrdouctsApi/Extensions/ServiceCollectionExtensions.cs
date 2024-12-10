@@ -16,6 +16,7 @@ namespace ProductInventoryManagerAPI.Extensions
             services.AddTransient<IProductValidationHelper, ProductValidationHelper>();
             services.AddTransient<IServiceResponseHelper, ServiceResponseHelper>();
             services.AddScoped<IStockUpdateService, StockUpdateService>();
+            services.AddScoped<ITokenGenerationService, TokenGenerationService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddTransient<ProductRequestResponse>();
             services.AddTransient<Products>();

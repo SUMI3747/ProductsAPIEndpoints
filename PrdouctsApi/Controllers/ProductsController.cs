@@ -1,5 +1,6 @@
 ﻿/*Purpose: API operations for product management | Author: Sumit L | Nov 2024 | For training and learning purposes*/
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrdouctsApi.Helpers;
 using PrdouctsApi.Models.DTOs;
@@ -7,6 +8,7 @@ using PrdouctsApi.ProductServices;
 
 namespace PrdouctsApi.Controllers
 {
+
     [Route("api/[Controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -15,7 +17,7 @@ namespace PrdouctsApi.Controllers
         private readonly IProductValidationHelper _validationHelper;
         private readonly IServiceResponseHelper _responseHelper;
 
-        public ProductsController(IProductService productService, 
+        public ProductsController(IProductService productService,
             IProductValidationHelper validationHelper,
             IServiceResponseHelper responseHelper)
         {
@@ -24,13 +26,14 @@ namespace PrdouctsApi.Controllers
             _responseHelper = responseHelper;
         }
 
-        
+
         /// <summary>
         /// Adds a new product to the database.
         /// </summary>
+       // [Authorize(Roles = "admin,sales")]
         [HttpPost]
         public async Task<ActionResult> AddProduct([FromBody] ProductDto productDto)
-        { 
+        {
             var validationResult = _validationHelper.ValidateProductDto(productDto);
             if (validationResult != null)
             {
@@ -44,6 +47,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Retrieves all products.
         /// </summary>
+        [Authorize(Roles = "admin,sales")]
         [HttpGet]
         public async Task<ActionResult> GetAllProducts()
         {
@@ -59,6 +63,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Retrieves a product by its ID.
         /// </summary>
+        [Authorize(Roles = "admin,sales")]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetProductById(int id)
         {
@@ -74,6 +79,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Deletes a product by its ID.
         /// </summary>
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -86,6 +92,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Updates a product's details.
         /// </summary>
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
         {
@@ -103,6 +110,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Decrements a product's stock quantity.
         /// </summary>
+        [Authorize(Roles = "admin,sales")]
         [HttpPut("decrement-stock/{id}/{quantity}")]
         public async Task<ActionResult> DecrementStock(int id, int quantity)
         {
@@ -118,6 +126,7 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Increments a product's stock quantity.
         /// </summary>
+        [Authorize]  // Trial Purpose any one can authenticated uses can  access api independent of Roles
         [HttpPut("increment-stock/{id}/{quantity}")]
         public async Task<ActionResult> IncrementStock(int id, int quantity)
         {
