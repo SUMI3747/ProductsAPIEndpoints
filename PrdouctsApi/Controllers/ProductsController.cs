@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrdouctsApi.Helpers;
 using PrdouctsApi.Models.DTOs;
 using PrdouctsApi.ProductServices;
+using ProductInventoryManagerAPI.ActionFilters;
 
 namespace PrdouctsApi.Controllers
 {
@@ -47,8 +48,9 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Retrieves all products.
         /// </summary>
-        [Authorize(Roles = "admin,sales")]
+        //[Authorize(Roles = "admin,sales")]
         [HttpGet]
+        [ServiceFilter(typeof(RateLimitFilter))]
         public async Task<ActionResult> GetAllProducts()
         {
             var products = await _productService.GetAllProductsAsync();
@@ -63,8 +65,10 @@ namespace PrdouctsApi.Controllers
         /// <summary>
         /// Retrieves a product by its ID.
         /// </summary>
+        [ServiceFilter(typeof(RateLimitFilter))]
         [Authorize(Roles = "admin,sales")]
         [HttpGet("{id}")]
+
         public async Task<ActionResult> GetProductById(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);

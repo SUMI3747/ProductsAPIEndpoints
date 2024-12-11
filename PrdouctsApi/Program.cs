@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PrdouctsApi.Data;
+using ProductInventoryManagerAPI.ActionFilters;
 using ProductInventoryManagerAPI.Data;
 using ProductInventoryManagerAPI.Extensions;
 using Serilog;
@@ -26,10 +26,6 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//}
 // Configure Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -66,6 +62,22 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<UserCredetialsContext>(options =>
     options.UseSqlServer(connectionString));
+//For RateLimtingRequests handling Filter and InMemory Cache
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<RateLimitFilter>();
+
+///This Configuration used to RateLimitRequesst in Distributed Eniviornment
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = "127.0.0.1:6379"; // Redis address and port
+//    options.InstanceName = "MyRedisInstance"; // Optional: Logical group of keys
+//});
+
+////Radis
+//builder.Services.AddControllers(options =>
+//{
+//    options.Filters.Add<RateLimitFilter>(); // Add the rate limit filter
+//});
 
 var app = builder.Build();
 
