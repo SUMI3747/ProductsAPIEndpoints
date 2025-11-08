@@ -2,9 +2,13 @@ name: .NET Core Desktop CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - UAT
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - UAT
 
 jobs:
   build_and_test:
