@@ -1,0 +1,63 @@
+name: .NET Core Desktop CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run unit tests
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Upload build artifacts (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            **/bin/Release/net8.0/*
+  
+  deploy:
+    runs-on: windows-latest
+    needs: build_and_test   # Only runs if build_and_test passes
+    if: success()           # Ensures deployment happens only if tests pass
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # You can download the build artifact or rebuild, depending on your preference
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      - name: Deploy application
+        run: |
+          echo "🚀 Deploying build..."
+          # Example: PowerShell or custom script to copy files to server or Azure
+
+          # For Azure Web App, you can use:
+          # uses: azure/webapps-deploy@v3
+          # with:
+          #   app-name: "your-app-name"
+          #   publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          #   package: path-to-your-artifact
