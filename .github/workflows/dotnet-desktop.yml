@@ -19,32 +19,40 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      # Optional: cache dependencies for faster builds
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ProductsApi.sln
 
       - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ProductsApi.sln --configuration Release --no-restore
 
       - name: Run unit tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test ProductsApi.sln --configuration Release --verbosity normal
 
-      - name: Upload build artifacts (optional)
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: |
-            **/bin/Release/net8.0/*
+            **/bin/Release/net8.0/
   
   deploy:
     runs-on: windows-latest
-    needs: build_and_test   # Only runs if build_and_test passes
-    if: success()           # Ensures deployment happens only if tests pass
+    needs: build_and_test
+    if: success()
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # You can download the build artifact or rebuild, depending on your preference
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -53,9 +61,7 @@ jobs:
       - name: Deploy application
         run: |
           echo "🚀 Deploying build..."
-          # Example: PowerShell or custom script to copy files to server or Azure
-
-          # For Azure Web App, you can use:
+          # 👉 Example: Deploy to Azure Web App
           # uses: azure/webapps-deploy@v3
           # with:
           #   app-name: "your-app-name"
